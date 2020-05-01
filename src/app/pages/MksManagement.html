@@ -1,0 +1,98 @@
+<template>
+    <div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="d-flex no-block">
+                                    <h4 class="card-title">Sales</h4>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="pull-right">
+                                    <button class="btn btn-primary" @click.prevent="navigateToForm()">Tambah MKS</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive m-t-20">
+                            <table class="table stylish-table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Nama</th>
+                                        <th>Admin</th>
+                                        <th>Target</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-if="dataMks && dataMks.length > 0">
+                                    <tr v-for="mks in dataMks" @click.prevent="rowOnClick(mks)">
+                                        <td style="width:50px;">
+                                            <span class="round">
+                                                <img alt="user" width="50" :src="mks.mks_sale.Avatar" v-if="mks.mks_sale.Avatar " />
+                                                {{mks.mks_sale.Avatar ? '' : mks.mks_sale.FirstName.substr(0, 1)}}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <h6>{{mks.mks_sale.FirstName}} {{mks.mks_sale.LastName}}</h6><small class="text-muted">{{mks.IdEmp}}</small></td>
+                                        <td>{{mks.mks_sale.mks_admin.FirstName}} {{mks.mks_sale.mks_admin.LastName}}</td>
+                                        <td>{{mks.mks_sale.Target}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <b-pagination
+                            v-model="currentPage"
+                            :total-rows="rows"
+                            :per-page="perPage"></b-pagination>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import SuperApi from "../services/Super.js"
+    export default {
+        data() {
+            return {
+                currentPage: 1,
+                perPage: 10,
+                rows: 0,
+                dataMks: [],
+                selectedMks: null
+            }
+        },
+        mounted() {
+            this.getListMks()
+            $("#modal-detail").fadeOut()
+        },
+        methods: {
+            rowOnClick(data) {
+                console.log(data)
+                this.selectedMks = data
+                this.$root.$router.push({name: 'sales.profile.report.page', params: {id: data.IdEmp}})
+                // $("#modal-detail").fadeIn()
+            },
+            getListMks(page = 1, limit = 10, search = "") {
+                SuperApi.GetList_MKS(page, limit, search)
+                .then(_resp => {
+                    
+                    this.rows = _resp.data.count
+                    this.dataMks = _resp.data.rows
+                    console.log(this.dataMks)
+                })
+            },
+            navigateToForm() {
+                this.$root.$router.push({name: "sales.form.page"})
+            },
+            navigateToModify() {
+                $("#modal-detail").fadeOut()
+                this.$root.$router.push({name: 'sales.modify.page', params: {id: this.selectedMks.IdEmp}})
+            }
+        }
+    }
+</script>

@@ -1,0 +1,80 @@
+<template>
+    <div>
+        <table class="table color-bordered-table info-bordered-table">
+            <thead>
+                <tr>
+                    <th colspan="4" align="center" style="text-align: center; background-color: azure; color: black;">SALES REPORT</th>
+                </tr>
+                <tr>
+                    <th>#</th>
+                    <th>Nama</th>
+                    <th>Instansi</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <input class="form-control" type="text" placeholder="Cari Nama">
+                    </td>
+                    <td colspan="2">
+                        <select class="form-control select2"> 
+                            <option value="0">JANUARI</option>
+                            <option value="1">FEBRUARI</option>
+                            <option value="2">MARET</option>
+                            <option value="3">APRIL</option>
+                            <option value="4">MEI</option>
+                            <option value="5">JUNI</option>
+                            <option value="6">JULI</option>
+                            <option value="7">AGUSTUS</option>
+                            <option value="8">SEPTEMBER</option>
+                            <option value="9">OKTOBER</option>
+                            <option value="10">NOVEMBER</option>
+                            <option value="11">DESEMBER</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Nigam</td>
+                    <td>Eichmann</td>
+                    <td>@Sonu</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Deshmukh</td>
+                    <td>Prohaska</td>
+                    <td>@Genelia</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Roshan</td>
+                    <td>Rogahn</td>
+                    <td>@Hritik</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">
+                        <b-pagination
+                                v-model="currentPage"
+                                :total-rows="rows"
+                                :per-page="perPage" class="pull-right"></b-pagination>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</template>
+
+<script>
+    export default {
+        data() {
+            return {
+                currentPage: 1,
+                perPage: 10,
+                rows: 0,
+            }
+        }
+    }
+</script>

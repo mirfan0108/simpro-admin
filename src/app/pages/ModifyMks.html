@@ -1,0 +1,198 @@
+<template>
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <form action="#" class="form-horizontal">
+                        <div class="form-body">
+                            <h3 class="box-title">Sales Form</h3>
+                            <hr class="m-t-0 m-b-40">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group ">
+                                        <label class="control-label text-right">First Name</label>
+                                        <input type="text" class="form-control" v-model="formMks.fname" placeholder="Nama Depan">
+                                        
+                                    </div>
+                                </div>
+                                <!--/span-->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-right">Last Name</label>
+                                        <input type="text" v-model="formMks.lname" class="form-control" placeholder="Nama Belakang">
+                                        
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-right">Avatar</label>
+                                        <input id="input-avatar" type="file"  class="form-control" placeholder="Avatar">
+                                       
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-right">Sales ID</label>
+                                        <input type="number" v-model="formMks.salesId" class="form-control" placeholder="Nomor Peg.">
+                                        
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-right">Target</label>
+                                        <input type="number" v-model="formMks.target" class="form-control" placeholder="Nomor Peg.">
+                                        
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group  row">
+                                        <label class="control-label text-right">Administartor</label>
+                                        <select id="select-admin" class="select2 form-control"></select>
+                                        
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-right">Password</label>
+                                        <input type="password" v-model="formMks.pwd" class="form-control" placeholder="Password">
+                                        
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label text-right">Re-Password</label>
+                                        <input type="password" v-model="formMks.rePwd" class="form-control" placeholder="Tulis Ulang Password">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-md-offset-3 col-md-9">
+                                            <!-- <button @click.prevent="doPost()" type="submit" class="btn btn-primary" 
+                                            :disabled="formMks.fname == '' || formMks.lname == '' || formMks.pwd == '' || formMks.rePwd == ''">Submit</button> -->
+                                            <button @click.prevent="doPost()" type="submit" class="btn btn-primary" >Submit</button>
+                                            <button @click.prevent="$root.$router.back()" type="button" class="btn btn-inverse">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>  
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import SuperApi from "../services/Super.js"
+    import GlobalApi from "../services/Global.js"
+    export default {
+        props: ['id'],
+        data() {
+            return {
+                formMks: {
+                    fname: '',
+                    lname: '',
+                    salesId: null,
+                    pwd: null,
+                    rePwd: null,
+                    adminId: null,
+                    target: 30,
+                },
+                fileList: [],
+                dataOriginal: {}
+            }
+        },
+        mounted() {
+            SuperApi.GetAll_Admin()
+            .then(_resp => {
+                SuperApi.GetOne_MKS(this.id)
+                .then(__resp => {
+                    this.dataOriginal = _resp.data
+                    console.log(__resp)
+                    this.formMks.fname = __resp.data.mks_sale.FirstName
+                    this.formMks.lname = __resp.data.mks_sale.LastName
+                    this.formMks.salesId = this.id,
+                    this.formMks.adminId = __resp.data.mks_sale.AdminId
+                    this.formMks.target = __resp.data.mks_sale.Target
+                })
+                .finally(() => {
+                    $("#select-admin").append("<option value='' disabled>PILIH ADMIN</option>")
+                    if(_resp.data && _resp.data.length > 0) {
+                        _resp.data.map(_val => {
+                            if(_val.mks_admin.id == this.formMks.adminId) {
+                                $("#select-admin").append(`<option selected value="${_val.mks_admin.id}"> ${_val.mks_admin.FirstName} ${_val.mks_admin.LastName}</option>`)
+                            } else {
+                                $("#select-admin").append(`<option value="${_val.mks_admin.id}"> ${_val.mks_admin.FirstName} ${_val.mks_admin.LastName}</option>`)
+                            }
+                        })
+                    }
+                })
+            })
+            $("#select-admin").select2()
+            $("#input-avatar").change(e => {
+                console.log(e.target.files)
+                this.fileList = e.target.files
+            })
+        },
+        methods: {
+            checkingInputAccount() {
+                let user = false
+                if(this.formMks.salesId != this.dataOriginal.IdEmp || this.formMks.rePwd != '') {
+                    return {
+                        IdEmp: this.formMks.salesId,
+                        Password: this.formMks.rePwd ? this.formMks.rePwd : null
+                    }
+                } else {
+                    return false
+                }
+            },
+            doPost() {
+                this.formMks.adminId = $("#select-admin").val()
+                let payloads = {
+                    user: this.checkingInputAccount(),
+                    sales: {
+                        AdminId: this.formMks.adminId,
+                        FirstName: this.formMks.fname,
+                        LastName: this.formMks.lname,
+                        Avatar: this.formMks.Avatar,
+                        Target: this.formMks.target
+                    }
+                }
+                if(this.fileList && this.fileList.length > 0) {
+                    let formBody = new FormData()
+                    formBody.append('avatar', this.fileList[0])
+                    GlobalApi.UploadAvatar(formBody)
+                    .then(_res => {
+                        console.log(_res)
+                        payloads.sales.Avatar = _res.data.filename ? _res.data.filename : null
+                    })
+                    .finally(() => {
+                        SuperApi.Modify_MKS(this.id ,payloads)
+                        .then(_resp => {
+                            console.log(_resp)
+                        })
+                        .finally(() => {
+                            this.$root.$router.replace({name: 'sales.page'})
+                        })
+                    })
+                } else {
+                    SuperApi.Modify_MKS(this.id ,payloads)
+                        .then(_resp => {
+                            console.log(_resp)
+                        })
+                        .finally(() => {
+                            this.$root.$router.replace({name: 'sales.page'})
+                        })
+                }
+            }
+        }
+    }
+</script>

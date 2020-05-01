@@ -1,0 +1,26 @@
+<template>
+    <div>
+        <topbar></topbar>
+        <sidebar></sidebar>
+        <div class="page-wrapper">
+            <div class="container-fluid">
+                <bread-crumb></bread-crumb>
+                <router-view></router-view>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import Topbar from "../components/Topbar.html"
+    import Sidebar from "../components/Sidebar.html"
+    import BreadCrumb from "../components/BreadCrumb.html"
+    export default {
+        components: {
+            Topbar,
+            Sidebar,
+            BreadCrumb
+        }
+    }
+
+</script>

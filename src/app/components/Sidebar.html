@@ -1,0 +1,112 @@
+<template>
+    <aside class="left-sidebar">
+        <!-- Sidebar scroll-->
+        <div class="scroll-sidebar">
+            <!-- User profile -->
+            <div class="user-profile" style="background: url(/assets/images/background/user-info.jpg) no-repeat;">
+                <!-- User profile image -->
+                <div class="profile-img"> <img :src="$root.state.avatar" alt="user" /> </div>
+                <!-- User profile text-->
+                <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">{{$root.state.username}}</a>
+                    <div class="dropdown-menu animated flipInY"> 
+                        <a href="javascript:void(0)" class="dropdown-item"><i class="ti-user"></i> My Profile</a> 
+                        <div class="dropdown-divider"></div> <a href="javascript:void(0)" class="dropdown-item"><i class="ti-settings"></i> Account Setting</a>
+                        <div class="dropdown-divider"></div> <a href="javascript:void(0)" class="dropdown-item"><i class="fa fa-power-off"></i> Logout</a> </div>
+                </div>
+            </div>
+            <!-- End User profile text-->
+            <!-- Sidebar navigation-->
+            <nav class="sidebar-nav">
+                <ul id="sidebarnav">
+                    <li class="nav-small-cap">MAIN NAVIGATION</li>
+                    <li id="li-dashboard" @click.prevent="activedClass('dashboard')"> 
+                        <router-link :to="{name: 'dashboard.page'}" class=" waves-effect waves-dark" >
+                            <i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span>
+                        </router-link>
+                    </li>
+                    <li id="li-monitoring" @click.prevent="activedClass('monitoring')"> 
+                        <router-link :to="{name: 'monitoring.page'}" class=" waves-effect waves-dark" >
+                            <i class="mdi mdi-gauge"></i><span class="hide-menu">Monitoring Nasabah </span>
+                        </router-link>
+                    </li>
+                    <li id="li-report" @click.prevent="activedClass('report')"> 
+                        <router-link :to="{name: 'report.page'}" class=" waves-effect waves-dark" >
+                            <i class="mdi mdi-gauge"></i><span class="hide-menu">Report </span>
+                        </router-link>
+                    </li>
+                    
+                    <li class="nav-devider" v-if="flag == 1"></li>
+                    <li class="nav-small-cap" v-if="flag == 1">ACCOUNT MANAGEMENT</li>
+                    
+                    <li id="li-administrator" @click.prevent="activedClass('administrator')"> 
+                        <router-link :to="{name: 'administrator.page'}" class=" waves-effect waves-dark" >
+                            <i class="mdi mdi-account-circle"></i><span class="hide-menu">Administrator</span>
+                        </router-link>
+                    </li>
+                    
+                    <li id="li-mks" @click.prevent="activedClass('mks')"> 
+                        <router-link :to="{name: 'sales.page'}"  >
+                            <i class="mdi mdi-account-circle"></i><span class="hide-menu">MKS</span>
+                        </router-link>
+                    </li>
+                </ul>
+            </nav>
+            <!-- End Sidebar navigation -->
+        </div>
+        <!-- End Sidebar scroll-->
+        <!-- Bottom points-->
+        <div class="sidebar-footer">
+            <small class="text-mute" style="margin-left: 10px;">
+                Version 0.0.1
+            </small>
+        </div>
+        <!-- End Bottom points-->
+    </aside>
+</template>
+
+<script>
+    export default {
+        data(){
+            return {
+                flag: 0
+            }
+        },
+        mounted(){
+            if(localStorage.getItem("__pr")) {
+                let profile = JSON.parse(localStorage.getItem("__pr"))
+                this.flag = profile.flag
+            }
+            if(this.flag != 1) {
+                $("#li-administrator").remove()
+                $("#li-mks").remove()
+            }
+        },
+        methods: {
+            inActiveClass() {
+                $("#sidebarnav>#li-dashboard>a.active").removeAttr("class")
+                $("#sidebarnav>#li-monitoring>a.active").removeAttr("class")
+                $("#sidebarnav>#li-report>a.active").removeAttr("class")
+
+                if(this.flag == 1) {
+                    $("#sidebarnav>#li-administrator>a.active").removeAttr("class")
+                    $("#sidebarnav>#li-mks>a.active").removeAttr("class")
+                    $("#li-administrator").removeAttr("class")
+                    $("#li-mks").removeAttr("class")
+                }
+
+                $("#li-dashboard").removeAttr("class")
+                $("#li-monitoring").removeAttr("class")
+                $("#li-report").removeAttr("class")
+                
+            },
+            activedClass(page) {
+                this.inActiveClass()
+                $(`#li-${page}`).addClass("active")
+            },
+            doLogout() {
+
+            }
+        }
+    }
+</script>
+

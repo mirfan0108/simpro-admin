@@ -1,0 +1,84 @@
+<template>
+    <section id="wrapper">
+        <div class="login-register" style="background-image:url(../../assets/images/background/megamenubg.jpg);">        
+            <div class="login-box card">
+            <div class="card-body">
+                <!-- <form class="form-horizontal form-material" role="form" @submit="doSubmit" > -->
+                    <h3 class="box-title m-b-20">Sign In</h3>
+                    <div class="form-group ">
+                        <div class="col-xs-12">
+                            <div class="input-group bootstrap-touchspin">
+                                <input required v-model="username" type="number" placeholder="ID Number"  class="form-control"  style="display: block;">
+                                
+                                <div class="input-group-append">
+                                    <button style="border: 0;" class="btn btn-secondary btn-outline bootstrap-touchspin-up" type="button"> &nbsp;&nbsp;</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group bootstrap-touchspin">
+                            <input required v-model="pwd" type="password" placeholder="Password"  class="form-control"  style="display: block;" v-if="!isShow">
+                            <input required type="text" v-model="pwd" placeholder="Password"  class="form-control"  style="display: block;" v-if="isShow">
+                            <div class="input-group-append">
+                                <button style="border: 0;" class="btn btn-secondary btn-outline bootstrap-touchspin-up" @click.prevent="isShow = !isShow">
+                                <i :class="isShow ? 'mdi mdi-eye-off':'mdi mdi-eye' "></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group text-center m-t-20">
+                        <div class="col-xs-12">
+                            <button @click.prevent="doSubmit" class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" >Log In</button>
+                        </div>
+                    </div>
+                <!-- </form> -->
+            </div>
+          </div>
+        </div>
+        
+    </section>
+</template>
+
+<script>
+    import ApiGlobal from "../services/Global.js"
+    export default {
+        data() {
+            return {
+                isShow: false,
+                username: null,
+                pwd: ''
+            }
+        },
+        mounted() {
+            if(localStorage.getItem("__CSRF")) {
+                this.$root.$router.replace({name: 'dashboard.page'})
+            }
+        },
+        methods: {
+            doSubmit() {
+                let form = {
+                    username: this.username,
+                    password: this.pwd
+                }
+                this.doPost(form)
+            },
+            doPost(data) {
+                ApiGlobal.Login(data)
+                .then(_resp => {
+                    if(_resp.data.success) {
+                        console.log(_resp)
+                        this.$root.state.username = _resp.data.profile.first_name +" "+_resp.data.profile.last_name
+                        this.$root.state.avatar = _resp.data.profile.avatar
+                        this.$root.state.flag = _resp.data.profile.flag
+                        localStorage.setItem("__CSRF", JSON.stringify( _resp.data.token))
+                        localStorage.setItem("__pr", JSON.stringify( _resp.data.profile))
+                        this.$root.$router.replace({name: "dashboard.page"})
+                    } else {
+                        // $('#alert-login').fadeIn(200)
+                    }
+                })
+            }
+        }
+    }
+</script>
